@@ -1,21 +1,25 @@
-name: Haxe Build (Windows)
-
+name: Build OpenFL Project
 on:
   push:
     branches: [main]
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  build:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
     - name: Install Haxe
-      run: choco install haxe -y
+      run: |
+        sudo apt-get update
+        sudo apt-get install haxe=4.2.1-1
+
+    - name: Install Haxe Standard Library
+      run: haxelib install hxcpp
+
+    - name: Clean Haxe Cache
+      run: haxelib clean
+
     - name: Install OpenFL
       run: haxelib install openfl
-    - name: Install Lime
-      run: haxelib install lime
-    - name: Install Windows dependencies
-      run: lime setup windows
-    - name: Build
-      run: lime build windows -debug
