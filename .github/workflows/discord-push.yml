@@ -1,4 +1,4 @@
-=name: Haxe Build (Windows)
+name: Haxe Build (Windows)
 
 on:
   push:
