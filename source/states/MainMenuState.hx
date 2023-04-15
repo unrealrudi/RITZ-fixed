@@ -20,8 +20,10 @@ class MainMenuState extends flixel.FlxState
         'Options',
         'Credits'
     ]; 
-
+    
     var cheese:FlxTiledSprite;
+    var menuItems:FlxTypedGroup<MenuItem>;
+    var selectedMenuItemIndex:Int = -1;
 
     override function create()
     {
@@ -36,11 +38,40 @@ class MainMenuState extends flixel.FlxState
         cheese.scrollY = 10;
         add(cheese);
 
-        persistentDraw = persistentUpdate = true;
+        menuItems = new FlxTypedGroup<MenuItem>();
+        for (i in 0...textMenuItems.length) {
+            var menuItem:MenuItem = new MenuItem(0, i * 60, textMenuItems[i], onMenuItemClicked, onMenuItemHovered);
+            menuItems.add(menuItem);
+        }
+        add(menuItems);
 
-        openSubState(new MenuBackend(textMenuItems));
+        persistentDraw = persistentUpdate = true;
         
         super.create();
+    }
+    
+    function onMenuItemClicked(index:Int) {
+        FlxG.log("Menu item clicked: " + textMenuItems[index]);
+    }
+    
+    function onMenuItemHovered(index:Int) {
+        if (selectedMenuItemIndex != index) {
+            if (selectedMenuItemIndex >= 0) {
+                menuItems.members[selectedMenuItemIndex].text.color = FlxColor.WHITE;
+            }
+            menuItems.members[index].text.color = FlxColor.BLUE;
+            selectedMenuItemIndex = index;
+        }
+    }
+    
+    override function onMouseUp(x:Int, y:Int, button:Int)
+    {
+        for (i in 0...menuItems.length) {
+            var menuItem:MenuItem = menuItems.members[i];
+            if (menuItem.overlapsPoint(x, y)) {
+                menuItem.onClick();
+            }
+        }
     }
 
     override function update(elapsed:Float) {
